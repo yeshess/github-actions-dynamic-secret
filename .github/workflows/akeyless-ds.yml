@@ -11,7 +11,7 @@ jobs:
       contents: read
       
     steps:
-    - uses: yeshess/github-actions-dynamic-secret@master
+    - uses: actions/checkout@v2
     - name: Fetch MySQL Dynamic Secret from Akeyless
       id: fetch-dynamic-secrets
       uses: LanceMcCarthy/akeyless-action@v3.1.1
