@@ -33,6 +33,6 @@ jobs:
         export LC_pass=$${{ env.JWT_password }}
         echo ${{ secrets.RSA }} | base64 -d >> jeremy-demo.pem
         chmod 600 jeremy-demo.pem
-        scp -o StrictHostKeyChecking=no -i "jeremy-demo.pem" github.com/yeshess/github-actions-dynamic-secret/blob/main/employee.sh ubuntu@3.133.90.136:~/.
+        scp -o StrictHostKeyChecking=no -i "jeremy-demo.pem" /home/runner/work/github-actions-dynamic-secret/employee.sh ubuntu@3.133.90.136:~/.
 #        ssh -o "SendEnv LC_*" -o StrictHostKeyChecking=no -i "jeremy-demo.pem" ubuntu@3.133.90.136 -t "bash employee.sh" # SSH into Remote EC2 Host and update DB
 #        echo "Database Employees updated!"
