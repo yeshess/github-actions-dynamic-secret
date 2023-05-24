@@ -4,27 +4,35 @@ on: push
 jobs: 
   fetch_dynamic_secrets:
     runs-on: 'ubuntu-latest'
-    name: Fetch dynamic secrets
+    name: Fetch MySQL Dynamic Secret and Update DB
     
     permissions:
       id-token: write
       contents: read
       
     steps:
-    - name: Fetch dynamic secrets from Akeyless
+    - name: Fetch MySQL Dynamic Secret from Akeyless
       id: fetch-dynamic-secrets
       uses: LanceMcCarthy/akeyless-action@v3.1.1
       with:
         access-id: ${{ secrets.ACCESS_ID }}
-        dynamic-secrets: '{"awsDS":"MY_SECRET"}'
+        dynamic-secrets: '{"mysqlDS":"MYSQL_DYNAMIC_SECRET"}'
         
-    - name: Export Secrets to Environment
+    - name: Export Secret to Environment
       run: |
-        echo '${{ steps.fetch-dynamic-secrets.outputs.MY_SECRET }}' | jq -r 'to_entries|map("JWT_\(.key)=\(.value|tostring)")|.[]' >> $GITHUB_ENV
+        echo '${{ steps.fetch-dynamic-secrets.outputs.MYSQL_DYNAMIC_SECRET }}' | jq -r 'to_entries|map("JWT_\(.key)=\(.value|tostring)")|.[]' >> $GITHUB_ENV
 # You can now access each secret separately as environment variables
     - name: Verify Vars
       run: |
-        echo "access_key_id: ${{ env.JWT_access_key_id }}"
         echo "id: ${{ env.JWT_id }}"
-        echo "secret_access_key: ${{ env.JWT_secret_access_key }}"
-        echo "type: ${{ env.JWT_type }}"
+        echo "password: ${{ env.JWT_password }}"
+    
+    - name: SSH into Host and Update Database Table
+      run: |
+        export LC_user=$(echo ${{ env.JWT_id }})
+        export LC_pass=$(echo ${{ env.JWT_password }})
+        echo $RSA | base64 --decode >> jeremy-demo.pem # Add RSA Private Key into PEM file in container
+        chmod 600 jeremy-demo.pem
+        scp -o StrictHostKeyChecking=no -i "jeremy-demo.pem" employee.sh ubuntu@$REMOTE_HOST:~/.
+        ssh -o "SendEnv LC_*" -o StrictHostKeyChecking=no -i "jeremy-demo.pem" ubuntu@$REMOTE_HOST -t "bash employee.sh" # SSH into Remote EC2 Host and update DB
+        echo "Database Employees updated!"
