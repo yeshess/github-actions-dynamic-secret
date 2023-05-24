@@ -35,7 +35,7 @@ jobs:
         port: 22
         key: ${{ secrets.KEY }}
         source: "employee.sh"
-        target: "~/"
+        target: ""
     
 #    - name: SSH into Host and Update Database Table
 #      run: |
