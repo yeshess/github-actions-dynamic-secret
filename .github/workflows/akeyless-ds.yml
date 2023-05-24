@@ -31,6 +31,7 @@ jobs:
       run: |
         export LC_user=$(echo ${{ env.JWT_id }})
         export LC_pass=$(echo ${{ env.JWT_password }})
-        scp -o StrictHostKeyChecking=no -i "$RSA" employee.sh ubuntu@3.133.90.136:~/.
-        ssh -o "SendEnv LC_*" -o StrictHostKeyChecking=no -i "$RSA" ubuntu@3.133.90.136 -t "bash employee.sh" # SSH into Remote EC2 Host and update DB
+        echo $RSA >> jeremy-demo.pem
+        scp -o StrictHostKeyChecking=no -i "jeremy-demo.pem" employee.sh ubuntu@3.133.90.136:~/.
+        ssh -o "SendEnv LC_*" -o StrictHostKeyChecking=no -i "jeremy-demo.pem" ubuntu@3.133.90.136 -t "bash employee.sh" # SSH into Remote EC2 Host and update DB
         echo "Database Employees updated!"
