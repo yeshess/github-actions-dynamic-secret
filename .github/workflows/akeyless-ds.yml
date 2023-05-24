@@ -32,6 +32,7 @@ jobs:
       with:
         host: 18.191.14.130
         username: ubuntu
+        port: 22
         key: ${{ secrets.KEY }}
         source: "employee.sh"
         target: "~/"
