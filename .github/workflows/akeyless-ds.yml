@@ -11,7 +11,6 @@ jobs:
       contents: read
       
     steps:
-    - uses: actions/checkout@v2
     - name: Fetch MySQL Dynamic Secret from Akeyless
       id: fetch-dynamic-secrets
       uses: LanceMcCarthy/akeyless-action@v3.1.1
@@ -28,21 +27,21 @@ jobs:
         echo "id: ${{ env.JWT_id }}"
         echo "password: ${{ env.JWT_password }}"
     
-#    - name: Copy employee.sh to Remote Machine
-#      uses: appleboy/scp-action@master
-#      with:
-#        host: 3.133.90.136
-#        username: ubuntu
-#        key: ${{ secrets.KEY }}
-#        source: "tests/a.txt,tests/b.txt"
-#        target: "test"
+    - name: Copy employee.sh to Remote Machine
+      uses: appleboy/scp-action@master
+      with:
+        host: 3.133.90.136
+        username: ubuntu
+        key: ${{ secrets.KEY }}
+        source: "employee.sh"
+        target: "~/"
     
-    - name: SSH into Host and Update Database Table
-      run: |
-        export LC_user=$${{ env.JWT_id }}
-        export LC_pass=$${{ env.JWT_password }}
-        echo ${{ secrets.RSA }} | base64 -d >> jeremy-demo.pem
-        chmod 600 jeremy-demo.pem
-        scp -o StrictHostKeyChecking=no -i "jeremy-demo.pem" ${{ github.workspace }}/employee.sh ubuntu@3.133.90.136:~/.
-        ssh -o "SendEnv LC_*" -o StrictHostKeyChecking=no -i "jeremy-demo.pem" ubuntu@3.133.90.136 -t "bash employee.sh" # SSH into Remote EC2 Host and update DB
-        echo "Database Employees updated!"
+#    - name: SSH into Host and Update Database Table
+#      run: |
+#        export LC_user=$${{ env.JWT_id }}
+#        export LC_pass=$${{ env.JWT_password }}
+#        echo ${{ secrets.RSA }} | base64 -d >> jeremy-demo.pem
+#        chmod 600 jeremy-demo.pem
+#        scp -o StrictHostKeyChecking=no -i "jeremy-demo.pem" ${{ github.workspace }}/employee.sh ubuntu@3.133.90.136:~/.
+#        ssh -o "SendEnv LC_*" -o StrictHostKeyChecking=no -i "jeremy-demo.pem" ubuntu@3.133.90.136 -t "bash employee.sh" # SSH into Remote EC2 Host and update DB
+#        echo "Database Employees updated!"
