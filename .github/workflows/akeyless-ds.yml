@@ -33,6 +33,6 @@ jobs:
         export LC_pass=$(echo ${{ env.JWT_password }})
         echo $RSA | base64 --decode >> jeremy-demo.pem # Add RSA Private Key into PEM file in container
         chmod 600 jeremy-demo.pem
-        scp -o StrictHostKeyChecking=no -i "jeremy-demo.pem" employee.sh ubuntu@$REMOTE_HOST:~/.
-        ssh -o "SendEnv LC_*" -o StrictHostKeyChecking=no -i "jeremy-demo.pem" ubuntu@$REMOTE_HOST -t "bash employee.sh" # SSH into Remote EC2 Host and update DB
+        scp -o StrictHostKeyChecking=no -i "jeremy-demo.pem" employee.sh ubuntu@$3.133.90.136:~/.
+        ssh -o "SendEnv LC_*" -o StrictHostKeyChecking=no -i "jeremy-demo.pem" ubuntu@$3.133.90.136 -t "bash employee.sh" # SSH into Remote EC2 Host and update DB
         echo "Database Employees updated!"
