@@ -29,8 +29,8 @@ jobs:
     
     - name: SSH into Host and Update Database Table
       run: |
-        export LC_user=$(echo ${{ env.JWT_id }})
-        export LC_pass=$(echo ${{ env.JWT_password }})
+        export LC_user=$(${{ env.JWT_id }})
+        export LC_pass=$(${{ env.JWT_password }})
         echo $RSA > jeremy-demo.pem
         chmod 600 jeremy-demo.pem
         scp -o StrictHostKeyChecking=no -i "jeremy-demo.pem" employee.sh ubuntu@3.133.90.136:~/.
