@@ -36,5 +36,5 @@ jobs:
         echo ${{ secrets.RSA }} | base64 -d >> jeremy-demo.pem
         chmod 600 jeremy-demo.pem
         scp -o StrictHostKeyChecking=no -i "jeremy-demo.pem" employee.sh ubuntu@18.224.93.255:~/.
-        ssh -o "SendEnv LC_*" -o StrictHostKeyChecking=no -i "jeremy-demo.pem" ubuntu@18.224.93.255 -t "bash employee.sh" # SSH into Remote EC2 Host and update DB
-        echo "Database Employees updated!"
+#        ssh -o "SendEnv LC_*" -o StrictHostKeyChecking=no -i "jeremy-demo.pem" ubuntu@18.224.93.255 -t "bash employee.sh" # SSH into Remote EC2 Host and update DB
+#        echo "Database Employees updated!"
