@@ -21,7 +21,7 @@ jobs:
     - name: Export Secret to Environment
       run: |
         echo '${{ steps.fetch-dynamic-secrets.outputs.MYSQL_DYNAMIC_SECRET }}' | jq -r 'to_entries|map("JWT_\(.key)=\(.value|tostring)")|.[]' >> $GITHUB_ENV
-# You can now access each secret separately as environment variables
+
     - name: Verify Vars
       run: |
         echo "id: ${{ env.JWT_id }}"
@@ -30,14 +30,11 @@ jobs:
     - name: SSH into Host and Update Database Table
       run: |
         echo -e '#!/bin/bash' >> employee.sh
-        echo -e "mysql -u\$LC_user -p\$LC_pass -e 'USE Employees; INSERT INTO employees (First_Name,Last_Name) VALUES (\"James\",\"Howlett\");'" >> employee.sh
+        echo -e "mysql -u\$LC_user -p\$LC_pass -e 'USE Employees; INSERT INTO employees (First_Name,Last_Name) VALUES (\"Max\",\"Eisenhardt\");'" >> employee.sh
         export LC_user=${{ env.JWT_id }}
         export LC_pass=${{ env.JWT_password }}
         echo ${{ secrets.RSA }} | base64 -d >> jeremy-demo.pem
         chmod 600 jeremy-demo.pem
-        scp -o StrictHostKeyChecking=no -i "jeremy-demo.pem" employee.sh ubuntu@18.224.93.255:~/.
-        cat employee.sh
-        echo $LC_user
-        echo $LC_pass
-        ssh -o "SendEnv LC_*" -o StrictHostKeyChecking=no -i "jeremy-demo.pem" ubuntu@18.224.93.255 -t "bash employee.sh" # SSH into Remote EC2 Host and update DB
+        scp -o StrictHostKeyChecking=no -i "jeremy-demo.pem" employee.sh ubuntu@3.137.208.245:~/.
+        ssh -o "SendEnv LC_*" -o StrictHostKeyChecking=no -i "jeremy-demo.pem" ubuntu@3.137.208.245 -t "bash employee.sh" # SSH into Remote EC2 Host and update DB
         echo "Database Employees updated!"
