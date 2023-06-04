@@ -4,7 +4,7 @@ on: push
 jobs:
   fetch_secrets:
     runs-on: 'ubuntu-latest'
-    name: Fetch some static secrets
+    name: Fetch static secret
     
     permissions:
       id-token: write
@@ -19,6 +19,7 @@ jobs:
         static-secrets: '{"jeremy-demo":"MY_RSA"}'
         
   fetch_dynamic_secrets:
+    needs: fetch_secrets
     runs-on: 'ubuntu-latest'
     name: Fetch MySQL Dynamic Secret and Update DB
     
