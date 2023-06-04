@@ -1,46 +1,25 @@
-name: 'Static and Dynamic Secrets to Update MySQL DB'
+name: 'Fetch Static and Dynamic Secrets to Update MySQL DB'
 on: push
 
 jobs:
-#  fetch_secrets:
-#    runs-on: 'ubuntu-latest'
-#    name: Fetch static secret
-    
-#    permissions:
-#      id-token: write
-#      contents: read
-
-#    steps:
-#    - name: Fetch static secret from Akeyless
-#      id: fetch-secrets
-#      uses: LanceMcCarthy/akeyless-action@v3.1.1
-#      with:
-#        access-id: ${{ secrets.ACCESS_ID}}
-#        static-secrets: '{"jeremy-demo":"MY_RSA"}'
-        
-#    - name: Export Secret to Environment
-#      run: |
-#        echo ${{ steps.fetch-secrets.outputs.MY_RSA }} >> $GITHUB_ENV
-        
   fetch_static_dynamic_secrets:
-#    needs: fetch_secrets
     runs-on: 'ubuntu-latest'
-    name: Fetch MySQL Dynamic Secret and Update DB
+    name: Use MySQL Dynamic Secret to Update DB
     
     permissions:
       id-token: write
       contents: read
       
     steps:
-    - name: Fetch MySQL Dynamic Secret from Akeyless
-      id: fetch-dynamic-secrets
+    - name: Fetch Private Key Static Secret and MySQL Dynamic Secret from Akeyless
+      id: fetch-secrets
       uses: LanceMcCarthy/akeyless-action@v3.1.1
       with:
         access-id: ${{ secrets.ACCESS_ID }}
         static-secrets: '{"jeremy-demo":"MY_RSA"}'
         dynamic-secrets: '{"mysqlDS":"MYSQL_DYNAMIC_SECRET"}'
         
-    - name: Export Secret to Environment
+    - name: Create PEM File & Export Dynamic Secret to Environment
       run: |
         echo ${{ env.MY_RSA }} | base64 -d >> jeremy-demo.pem      
         echo '${{ steps.fetch-dynamic-secrets.outputs.MYSQL_DYNAMIC_SECRET }}' | jq -r 'to_entries|map("JWT_\(.key)=\(.value|tostring)")|.[]' >> $GITHUB_ENV
@@ -53,7 +32,7 @@ jobs:
     - name: SSH into Host and Update Database Table
       run: |
         echo -e '#!/bin/bash' >> employee.sh
-        echo -e "mysql -u\$LC_user -p\$LC_pass -e 'USE Employees; INSERT INTO employees (First_Name,Last_Name) VALUES (\"Max\",\"Eisenhardt\");'" >> employee.sh
+        echo -e "mysql -u\$LC_user -p\$LC_pass -e 'USE Employees; INSERT INTO employees (First_Name,Last_Name) VALUES (\"Steve\",\"Rogers\");'" >> employee.sh
         export LC_user=${{ env.JWT_id }}
         export LC_pass=${{ env.JWT_password }}
         chmod 600 jeremy-demo.pem
