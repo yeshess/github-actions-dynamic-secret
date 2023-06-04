@@ -24,6 +24,7 @@ jobs:
         echo "RSA<<$EOF" >> $GITHUB_ENV
         echo ${{ steps.fetch-secrets.outputs.MY_RSA }} >> $GITHUB_ENV
         echo "$EOF" >> "$GITHUB_ENV"
+        echo "${{ env.RSA }}"
         
   fetch_dynamic_secrets:
     needs: fetch_secrets
