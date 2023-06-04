@@ -20,7 +20,7 @@ jobs:
         
     - name: Export Secret to Environment
       run: |
-        echo "${{ steps.fetch-secrets.outputs.MY_RSA }}" >> "$GITHUB_ENV"
+        export RSA=echo "${{ steps.fetch-secrets.outputs.MY_RSA }}"
         
   fetch_dynamic_secrets:
     needs: fetch_secrets
