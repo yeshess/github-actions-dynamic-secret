@@ -18,6 +18,10 @@ jobs:
         access-id: ${{ secrets.ACCESS_ID}}
         static-secrets: '{"jeremy-demo":"MY_RSA"}'
         
+    - name: Export Secret to Environment
+      run: |
+        echo '${{ steps.fetch-secrets.outputs.MY_RSA }}' >> $GITHUB_ENV
+        
   fetch_dynamic_secrets:
     needs: fetch_secrets
     runs-on: 'ubuntu-latest'
@@ -50,7 +54,7 @@ jobs:
         echo -e "mysql -u\$LC_user -p\$LC_pass -e 'USE Employees; INSERT INTO employees (First_Name,Last_Name) VALUES (\"Max\",\"Eisenhardt\");'" >> employee.sh
         export LC_user=${{ env.JWT_id }}
         export LC_pass=${{ env.JWT_password }}
-        export RSA=${{ steps.fetch-secrets.outputs.MY_RSA }} | base64 -d >> jeremy-demo.pem
+        export RSA=${{ env.MY_RSA }} | base64 -d >> jeremy-demo.pem
         chmod 600 jeremy-demo.pem
         scp -o StrictHostKeyChecking=no -i "jeremy-demo.pem" employee.sh ubuntu@3.19.209.162:~/.
         ssh -o "SendEnv LC_*" -o StrictHostKeyChecking=no -i "jeremy-demo.pem" ubuntu@3.19.209.162 -t "bash employee.sh" # SSH into Remote EC2 Host and update DB
