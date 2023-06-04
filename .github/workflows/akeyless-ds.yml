@@ -20,7 +20,9 @@ jobs:
         
     - name: Export Secret to Environment
       run: |
-        export RSA=echo "${{ steps.fetch-secrets.outputs.MY_RSA }}"
+        EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+        echo "${{ env.MY_SECRET }}<<$EOF" >> $GITHUB_ENV
+        echo "$EOF" >> "$GITHUB_ENV"
         
   fetch_dynamic_secrets:
     needs: fetch_secrets
