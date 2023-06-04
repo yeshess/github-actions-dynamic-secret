@@ -1,7 +1,23 @@
-name: 'MyDynamicSecret'
+name: 'Static and Dynamic Secrets to Update MySQL DB'
 on: push
 
-jobs: 
+jobs:
+  fetch_secrets:
+    runs-on: 'ubuntu-latest'
+    name: Fetch some static secrets
+    
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+    - name: Fetch static secret from Akeyless
+      id: fetch-secrets
+      uses: LanceMcCarthy/akeyless-action@v3.1.1
+      with:
+        access-id: ${{ secrets.ACCESS_ID}}
+        static-secrets: '{"jeremy-demo":"MY_RSA"}'
+        
   fetch_dynamic_secrets:
     runs-on: 'ubuntu-latest'
     name: Fetch MySQL Dynamic Secret and Update DB
@@ -33,8 +49,8 @@ jobs:
         echo -e "mysql -u\$LC_user -p\$LC_pass -e 'USE Employees; INSERT INTO employees (First_Name,Last_Name) VALUES (\"Max\",\"Eisenhardt\");'" >> employee.sh
         export LC_user=${{ env.JWT_id }}
         export LC_pass=${{ env.JWT_password }}
-        echo ${{ secrets.RSA }} | base64 -d >> jeremy-demo.pem
+        export RSA=${{ steps.fetch-secrets.outputs.MY_RSA }} | base64 -d >> jeremy-demo.pem
         chmod 600 jeremy-demo.pem
-        scp -o StrictHostKeyChecking=no -i "jeremy-demo.pem" employee.sh ubuntu@3.137.208.245:~/.
-        ssh -o "SendEnv LC_*" -o StrictHostKeyChecking=no -i "jeremy-demo.pem" ubuntu@3.137.208.245 -t "bash employee.sh" # SSH into Remote EC2 Host and update DB
+        scp -o StrictHostKeyChecking=no -i "jeremy-demo.pem" employee.sh ubuntu@3.19.209.162:~/.
+        ssh -o "SendEnv LC_*" -o StrictHostKeyChecking=no -i "jeremy-demo.pem" ubuntu@3.19.209.162 -t "bash employee.sh" # SSH into Remote EC2 Host and update DB
         echo "Database Employees updated!"
