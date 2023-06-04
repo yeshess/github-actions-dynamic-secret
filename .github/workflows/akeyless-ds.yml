@@ -22,7 +22,7 @@ jobs:
       run: |
         EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
         echo "RSA<<$EOF" >> $GITHUB_ENV
-        echo ${{ env.MY_SECRET }} >> $GITHUB_ENV
+        echo ${{ steps.fetch-secrets.outputs.MY_RSA }} >> $GITHUB_ENV
         echo "$EOF" >> "$GITHUB_ENV"
         
   fetch_dynamic_secrets:
