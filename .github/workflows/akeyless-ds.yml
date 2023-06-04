@@ -22,7 +22,7 @@ jobs:
     - name: Create PEM File & Export Dynamic Secret to Environment
       run: |
         echo ${{ env.MY_RSA }} | base64 -d >> jeremy-demo.pem      
-        echo '${{ steps.fetch-dynamic-secrets.outputs.MYSQL_DYNAMIC_SECRET }}' | jq -r 'to_entries|map("JWT_\(.key)=\(.value|tostring)")|.[]' >> $GITHUB_ENV
+        echo '${{ steps.fetch-secrets.outputs.MYSQL_DYNAMIC_SECRET }}' | jq -r 'to_entries|map("JWT_\(.key)=\(.value|tostring)")|.[]' >> $GITHUB_ENV
 
     - name: Verify Vars
       run: |
